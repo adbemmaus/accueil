@@ -52,7 +52,7 @@
 
         #welcome-text {
             font-weight: 900;
-            font-size: 7rem;
+            font-size: 6.5rem;
             color: #1a1a1a;
             text-transform: uppercase;
             text-align: center;
@@ -62,12 +62,17 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
             display: flex;
             align-items: center;
-            gap: 30px; /* Espace entre le drapeau et le texte */
+            justify-content: center;
+            gap: 40px;
         }
 
-        .flag {
-            font-style: normal;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+        /* Style pour l'image du drapeau */
+        .flag-img {
+            height: 80px; /* Ajusté à la taille du texte */
+            width: auto;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
         }
 
         .zoom-effect {
@@ -75,26 +80,10 @@
         }
 
         @keyframes spatialTravel {
-            0% {
-                opacity: 0;
-                transform: scale(0.1) translateZ(-800px);
-                filter: blur(15px);
-            }
-            25% {
-                opacity: 1;
-                filter: blur(0px);
-                transform: scale(0.8) translateZ(-100px);
-            }
-            75% {
-                opacity: 1;
-                filter: blur(0px);
-                transform: scale(1.1) translateZ(50px);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(4.5) translateZ(600px);
-                filter: blur(12px);
-            }
+            0% { opacity: 0; transform: scale(0.1) translateZ(-800px); filter: blur(15px); }
+            25% { opacity: 1; filter: blur(0px); transform: scale(0.8) translateZ(-100px); }
+            75% { opacity: 1; filter: blur(0px); transform: scale(1.1) translateZ(50px); }
+            100% { opacity: 0; transform: scale(4.5) translateZ(600px); filter: blur(12px); }
         }
 
         .datetime-container {
@@ -116,11 +105,12 @@
         .time { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
 
         @media (max-width: 1024px) {
-            #welcome-text { font-size: 4rem; gap: 15px; }
+            #welcome-text { font-size: 4rem; gap: 20px; }
+            .flag-img { height: 50px; }
         }
 
         @media (max-width: 768px) {
-            #welcome-text { font-size: 2.5rem; flex-direction: column; gap: 5px; }
+            #welcome-text { font-size: 2.5rem; flex-direction: column; gap: 10px; }
             .welcome-container { margin-bottom: 160px; }
             .datetime-container { align-self: center; text-align: center; }
         }
@@ -132,9 +122,7 @@
 
     <div class="welcome-container">
         <div id="welcome-text">
-            <span class="flag">🇫🇷</span>
-            <span class="text">Bienvenue</span>
-        </div>
+            </div>
     </div>
 
     <div class="datetime-container">
@@ -145,7 +133,7 @@
     </div>
 
     <script>
-        // Système de Particules (Étoiles)
+        // --- Étoiles ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -175,16 +163,17 @@
         }
         animate();
 
-        // Animation Bienvenue multilingue avec Drapeaux
+        // --- Animation avec IMAGES de drapeaux ---
+        // Utilisation des codes ISO pour FlagPedia
         const languages = [
-            { flag: "🇫🇷", text: "Bienvenue" },
-            { flag: "🇬🇧", text: "Welcome" },
-            { flag: "🇪🇸", text: "Bienvenido" },
-            { flag: "🇩🇪", text: "Willkommen" },
-            { flag: "🇮🇹", text: "Benvenuto" },
-            { flag: "🇵🇹", text: "Bem-vindo" },
-            { flag: "🇵🇱", text: "Witamy" },
-            { flag: "🇫🇮", text: "Tervetuloa" }
+            { code: "fr", text: "Bienvenue" },
+            { code: "gb", text: "Welcome" },
+            { code: "es", text: "Bienvenido" },
+            { code: "de", text: "Willkommen" },
+            { code: "it", text: "Benvenuto" },
+            { code: "pt", text: "Bem-vindo" },
+            { code: "pl", text: "Witamy" },
+            { code: "fi", text: "Tervetuloa" }
         ];
         
         let langIndex = 0;
@@ -194,26 +183,27 @@
             welcomeEl.classList.remove('zoom-effect');
             void welcomeEl.offsetWidth; 
             
-            langIndex = (langIndex + 1) % languages.length;
+            const current = languages[langIndex];
+            // On utilise FlagPedia pour récupérer l'image PNG du drapeau
+            const flagUrl = `https://flagcdn.com/w160/${current.code}.png`;
             
-            // Mise à jour du contenu (drapeau + texte)
             welcomeEl.innerHTML = `
-                <span class="flag">${languages[langIndex].flag}</span>
-                <span class="text">${languages[langIndex].text}</span>
+                <img src="${flagUrl}" class="flag-img" alt="${current.code}">
+                <span>${current.text}</span>
             `;
             
             welcomeEl.classList.add('zoom-effect');
+            langIndex = (langIndex + 1) % languages.length;
         }
 
-        welcomeEl.classList.add('zoom-effect');
+        updateWelcome();
         setInterval(updateWelcome, 6000);
 
-        // Date et Saints (Base de données du fichier original)
+        // --- Date et Saints ---
         const saints = {
-            '0-1': 'Sainte Marie, Mère de Dieu',
-            '1-17': 'Saint Alexis de Rome',
-            // ... (Conservez votre liste complète ici)
+            '1-17': 'Saint Alexis',
             '1-18': 'Sainte Bernadette'
+            // - Reprenez votre liste complète de l'index.html original ici
         };
 
         function updateDateTimeAndSaint() {
