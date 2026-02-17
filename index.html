@@ -20,98 +20,93 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Pour séparer le haut du bas */
+            justify-content: space-between;
             align-items: center;
             padding: 60px;
+            overflow: hidden; /* Empêche les barres de défilement pendant l'animation */
         }
 
-        /* Conteneur pour le message de bienvenue au centre */
+        /* Conteneur de bienvenue avec perspective */
         .welcome-container {
             flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 100px; /* Ajustement pour être juste au-dessus du logo */
-            position: relative;
+            perspective: 1000px;
             width: 100%;
+            margin-bottom: 80px; /* Positionné juste au dessus du logo central */
         }
 
         #welcome-text {
-            font-size: 4rem;
-            font-weight: 800;
+            font-size: 5rem;
+            font-weight: 900;
             color: #1a1a1a;
             text-transform: uppercase;
-            letter-spacing: 3px;
+            text-align: center;
             opacity: 0;
-            transition: opacity 1s ease-in-out;
-            text-shadow: 0 4px 15px rgba(255, 255, 255, 0.5);
+            filter: blur(5px);
+            /* L'animation est gérée via JS pour se déclencher proprement */
+            transition: all 1.5s cubic-bezier(0.21, 0.61, 0.35, 1);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+            white-space: nowrap;
+        }
+
+        /* Classe d'animation "Spatial Zoom" */
+        .zoom-effect {
+            animation: spatialTravel 4s forwards;
+        }
+
+        @keyframes spatialTravel {
+            0% {
+                opacity: 0;
+                transform: scale(0.3) translateZ(-500px);
+                filter: blur(10px);
+                letter-spacing: 20px;
+            }
+            30% {
+                opacity: 1;
+                filter: blur(0px);
+                letter-spacing: 5px;
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.2) translateZ(100px);
+                filter: blur(0px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(2.5) translateZ(300px);
+                filter: blur(8px);
+                letter-spacing: 15px;
+            }
         }
 
         .datetime-container {
-            align-self: flex-end; /* Garde l'horloge en bas à droite */
+            align-self: flex-end;
             text-align: right;
             color: #333;
-            background: rgba(255, 255, 255, 0.75);
-            padding: 30px 40px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 25px 35px;
             border-radius: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .date {
-            font-size: 1.8rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-            color: #2d2d2d;
-        }
-
-        .saint-label {
-            font-size: 0.9rem;
-            color: #666;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .saint {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1a1a1a;
-            margin-bottom: 15px;
-        }
-
-        .time {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            letter-spacing: 2px;
-        }
-
-        .time span {
-            display: inline-block;
-            min-width: 50px;
-            text-align: center;
-        }
+        .date { font-size: 1.6rem; font-weight: 500; margin-bottom: 10px; }
+        .saint-label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 2px; }
+        .saint { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; }
+        .time { font-size: 2.2rem; font-weight: 700; letter-spacing: 1px; }
 
         @media (max-width: 768px) {
-            body {
-                padding: 30px;
-                justify-content: center;
-            }
-
-            #welcome-text {
-                font-size: 2.5rem;
-            }
-
-            .datetime-container {
-                align-self: center;
-                text-align: center;
-                padding: 25px 30px;
-            }
+            #welcome-text { font-size: 2.5rem; }
+            body { padding: 20px; }
+            .datetime-container { align-self: center; text-align: center; }
         }
     </style>
 </head>
 <body>
+
     <div class="welcome-container">
         <div id="welcome-text">Bienvenue</div>
     </div>
@@ -124,60 +119,51 @@
     </div>
 
     <script>
-        // Gestion du message de bienvenue multilingue
-        const languages = [
-            "Bienvenue", "Welcome", "Bienvenido", "Willkommen", 
-            "Benvenuto", "Bem-vindo", "Welkom", "Witamy"
-        ];
+        // --- Animation Spatial Zoom ---
+        const languages = ["Bienvenue", "Welcome", "Bienvenido", "Willkommen", "Benvenuto", "Bem-vindo", "Witamy", "Tervetuloa"];
         let langIndex = 0;
         const welcomeEl = document.getElementById('welcome-text');
 
         function updateWelcome() {
-            welcomeEl.style.opacity = 0; // Disparition
+            // On retire l'animation pour la réinitialiser
+            welcomeEl.classList.remove('zoom-effect');
             
-            setTimeout(() => {
-                langIndex = (langIndex + 1) % languages.length;
-                welcomeEl.textContent = languages[langIndex];
-                welcomeEl.style.opacity = 1; // Apparition
-            }, 1000); // Temps de la transition
+            // Forcer un reflow pour que le navigateur voit que la classe a été enlevée
+            void welcomeEl.offsetWidth; 
+
+            // Changer le texte
+            langIndex = (langIndex + 1) % languages.length;
+            welcomeEl.textContent = languages[langIndex];
+
+            // Réappliquer l'animation
+            welcomeEl.classList.add('zoom-effect');
         }
 
-        // Initialisation du fondu
-        welcomeEl.style.opacity = 1;
-        setInterval(updateWelcome, 4000); // Change toutes les 4 secondes
+        // Lancement du cycle (toutes les 4 secondes)
+        welcomeEl.classList.add('zoom-effect');
+        setInterval(updateWelcome, 4000);
 
-        // --- Votre base de données des saints (conservée) ---
+        // --- Gestion Date/Heure/Saints (Code d'origine conservé) ---
         const saints = {
             '0-1': 'Sainte Marie, Mère de Dieu',
-            // ... (tous les saints restent ici)
-            '1-17': 'Saint Alexis de Rome', // Corrigé selon votre liste
-            '1-18': 'Sainte Bernadette Soubirous',
-            // ... (le reste de votre liste de saints)
+            '1-17': 'Saint Alexis de Rome',
+            // ... (Insérez ici votre liste complète des saints du fichier précédent)
             '11-31': 'Saint Sylvestre Ier'
         };
 
         function updateDateTimeAndSaint() {
             const now = new Date();
-            // Note: Retrait du +1h manuel car l'objet Date prend l'heure locale par défaut
-            
             const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
             
-            const jourSemaine = jours[now.getDay()];
-            const jour = now.getDate();
-            const moisNom = mois[now.getMonth()];
-            const annee = now.getFullYear();
-            
-            document.getElementById('date').textContent = `${jourSemaine} ${jour} ${moisNom} ${annee}`;
-            
-            const key = `${now.getMonth()}-${jour}`;
+            document.getElementById('date').textContent = `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]} ${now.getFullYear()}`;
+            const key = `${now.getMonth()}-${now.getDate()}`;
             document.getElementById('saint').textContent = saints[key] || 'Saint du jour';
             
-            const heures = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const secondes = String(now.getSeconds()).padStart(2, '0');
-            
-            document.getElementById('time').innerHTML = `<span>${heures}</span>:<span>${minutes}</span>:<span>${secondes}</span>`;
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('time').innerHTML = `${h}:${m}:${s}`;
         }
 
         updateDateTimeAndSaint();
