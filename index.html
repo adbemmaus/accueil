@@ -19,7 +19,7 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            font-family: 'Nunito', sans-serif; /* Application de Nunito partout */
+            font-family: 'Nunito', sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -46,22 +46,28 @@
             align-items: center;
             perspective: 1200px;
             width: 100%;
-            margin-bottom: 240px; /* Espace pour le logo central */
+            margin-bottom: 240px; 
             z-index: 2;
         }
 
         #welcome-text {
-            font-family: 'Nunito', sans-serif;
             font-weight: 900;
-            font-size: 7.5rem;
-            color: #1a1a1a; /* Noir profond */
+            font-size: 7rem;
+            color: #1a1a1a;
             text-transform: uppercase;
             text-align: center;
             opacity: 0;
             white-space: nowrap;
             will-change: transform, opacity;
-            /* Légère lueur pour assurer le contraste sur les zones sombres */
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 30px; /* Espace entre le drapeau et le texte */
+        }
+
+        .flag {
+            font-style: normal;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
         }
 
         .zoom-effect {
@@ -73,12 +79,10 @@
                 opacity: 0;
                 transform: scale(0.1) translateZ(-800px);
                 filter: blur(15px);
-                letter-spacing: 40px;
             }
             25% {
                 opacity: 1;
                 filter: blur(0px);
-                letter-spacing: 2px;
                 transform: scale(0.8) translateZ(-100px);
             }
             75% {
@@ -90,7 +94,6 @@
                 opacity: 0;
                 transform: scale(4.5) translateZ(600px);
                 filter: blur(12px);
-                letter-spacing: 20px;
             }
         }
 
@@ -112,8 +115,12 @@
         .saint { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
         .time { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
 
+        @media (max-width: 1024px) {
+            #welcome-text { font-size: 4rem; gap: 15px; }
+        }
+
         @media (max-width: 768px) {
-            #welcome-text { font-size: 3rem; }
+            #welcome-text { font-size: 2.5rem; flex-direction: column; gap: 5px; }
             .welcome-container { margin-bottom: 160px; }
             .datetime-container { align-self: center; text-align: center; }
         }
@@ -124,7 +131,10 @@
     <canvas id="starfield"></canvas>
 
     <div class="welcome-container">
-        <div id="welcome-text">Bienvenue</div>
+        <div id="welcome-text">
+            <span class="flag">🇫🇷</span>
+            <span class="text">Bienvenue</span>
+        </div>
     </div>
 
     <div class="datetime-container">
@@ -135,7 +145,7 @@
     </div>
 
     <script>
-        // Système de Particules
+        // Système de Particules (Étoiles)
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let particles = [];
@@ -165,24 +175,44 @@
         }
         animate();
 
-        // Animation Bienvenue multilingue
-        const languages = ["Bienvenue", "Welcome", "Bienvenido", "Willkommen", "Benvenuto", "Bem-vindo", "Witamy", "Tervetuloa", "Velkommen"];
+        // Animation Bienvenue multilingue avec Drapeaux
+        const languages = [
+            { flag: "🇫🇷", text: "Bienvenue" },
+            { flag: "🇬🇧", text: "Welcome" },
+            { flag: "🇪🇸", text: "Bienvenido" },
+            { flag: "🇩🇪", text: "Willkommen" },
+            { flag: "🇮🇹", text: "Benvenuto" },
+            { flag: "🇵🇹", text: "Bem-vindo" },
+            { flag: "🇵🇱", text: "Witamy" },
+            { flag: "🇫🇮", text: "Tervetuloa" }
+        ];
+        
         let langIndex = 0;
         const welcomeEl = document.getElementById('welcome-text');
 
         function updateWelcome() {
             welcomeEl.classList.remove('zoom-effect');
             void welcomeEl.offsetWidth; 
+            
             langIndex = (langIndex + 1) % languages.length;
-            welcomeEl.textContent = languages[langIndex];
+            
+            // Mise à jour du contenu (drapeau + texte)
+            welcomeEl.innerHTML = `
+                <span class="flag">${languages[langIndex].flag}</span>
+                <span class="text">${languages[langIndex].text}</span>
+            `;
+            
             welcomeEl.classList.add('zoom-effect');
         }
+
         welcomeEl.classList.add('zoom-effect');
         setInterval(updateWelcome, 6000);
 
-        // Date et Saints (Base de données complète à insérer ici)
+        // Date et Saints (Base de données du fichier original)
         const saints = {
-            '1-17': 'Saint Alexis d\'Hegne',
+            '0-1': 'Sainte Marie, Mère de Dieu',
+            '1-17': 'Saint Alexis de Rome',
+            // ... (Conservez votre liste complète ici)
             '1-18': 'Sainte Bernadette'
         };
 
