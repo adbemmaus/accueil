@@ -13,6 +13,7 @@
 
         body {
             min-height: 100vh;
+            background-color: #000; /* Fond noir de secours */
             background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
@@ -22,62 +23,73 @@
             flex-direction: column;
             justify-content: space-between;
             align-items: center;
-            padding: 60px;
-            overflow: hidden; /* Empêche les barres de défilement pendant l'animation */
+            padding: 40px;
+            overflow: hidden;
+            position: relative;
         }
 
-        /* Conteneur de bienvenue avec perspective */
+        /* Canevas pour les particules spatiales */
+        #starfield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .welcome-container {
             flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            perspective: 1000px;
+            perspective: 1200px;
             width: 100%;
-            margin-bottom: 80px; /* Positionné juste au dessus du logo central */
+            margin-bottom: 220px; /* Remonté pour bien dégager le logo */
+            z-index: 2;
         }
 
         #welcome-text {
-            font-size: 5rem;
+            font-size: 5.5rem;
             font-weight: 900;
-            color: #1a1a1a;
+            color: #ffffff; /* Texte blanc pour mieux ressortir avec la lueur */
             text-transform: uppercase;
             text-align: center;
             opacity: 0;
-            filter: blur(5px);
-            /* L'animation est gérée via JS pour se déclencher proprement */
-            transition: all 1.5s cubic-bezier(0.21, 0.61, 0.35, 1);
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
             white-space: nowrap;
+            will-change: transform, opacity;
+            /* Lueur externe */
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
         }
 
-        /* Classe d'animation "Spatial Zoom" */
         .zoom-effect {
-            animation: spatialTravel 4s forwards;
+            animation: spatialTravel 6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes spatialTravel {
             0% {
                 opacity: 0;
-                transform: scale(0.3) translateZ(-500px);
-                filter: blur(10px);
-                letter-spacing: 20px;
+                transform: scale(0.1) translateZ(-800px);
+                filter: blur(15px);
+                letter-spacing: 40px;
             }
-            30% {
+            25% {
                 opacity: 1;
                 filter: blur(0px);
-                letter-spacing: 5px;
+                letter-spacing: 8px;
+                transform: scale(0.8) translateZ(-100px);
             }
-            70% {
+            75% {
                 opacity: 1;
-                transform: scale(1.2) translateZ(100px);
                 filter: blur(0px);
+                transform: scale(1.1) translateZ(50px);
             }
             100% {
                 opacity: 0;
-                transform: scale(2.5) translateZ(300px);
-                filter: blur(8px);
-                letter-spacing: 15px;
+                transform: scale(3.5) translateZ(500px);
+                filter: blur(12px);
+                letter-spacing: 25px;
             }
         }
 
@@ -85,27 +97,30 @@
             align-self: flex-end;
             text-align: right;
             color: #333;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.75);
             padding: 25px 35px;
             border-radius: 20px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            z-index: 2;
         }
 
-        .date { font-size: 1.6rem; font-weight: 500; margin-bottom: 10px; }
-        .saint-label { font-size: 0.8rem; color: #666; text-transform: uppercase; letter-spacing: 2px; }
-        .saint { font-size: 1.3rem; font-weight: 600; margin-bottom: 10px; }
+        .date { font-size: 1.6rem; font-weight: 500; margin-bottom: 8px; }
+        .saint-label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 2px; }
+        .saint { font-size: 1.3rem; font-weight: 600; margin-bottom: 8px; }
         .time { font-size: 2.2rem; font-weight: 700; letter-spacing: 1px; }
 
         @media (max-width: 768px) {
             #welcome-text { font-size: 2.5rem; }
-            body { padding: 20px; }
-            .datetime-container { align-self: center; text-align: center; }
+            .welcome-container { margin-bottom: 150px; }
+            .datetime-container { align-self: center; text-align: center; padding: 20px; }
         }
     </style>
 </head>
 <body>
+
+    <canvas id="starfield"></canvas>
 
     <div class="welcome-container">
         <div id="welcome-text">Bienvenue</div>
@@ -119,36 +134,75 @@
     </div>
 
     <script>
-        // --- Animation Spatial Zoom ---
-        const languages = ["Bienvenue", "Welcome", "Bienvenido", "Willkommen", "Benvenuto", "Bem-vindo", "Witamy", "Tervetuloa"];
+        // --- Système de Particules (Étoiles) ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.init();
+            }
+            init() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.speed = Math.random() * 0.5 + 0.1;
+                this.opacity = Math.random();
+            }
+            update() {
+                this.y -= this.speed; // Mouvement vers le haut pour l'effet de voyage
+                if (this.y < 0) this.init();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // --- Animation Bienvenue ---
+        const languages = ["Bienvenue", "Welcome", "Bienvenido", "Willkommen", "Benvenuto", "Bem-vindo", "Witamy", "Tervetuloa", "Velkommen"];
         let langIndex = 0;
         const welcomeEl = document.getElementById('welcome-text');
 
         function updateWelcome() {
-            // On retire l'animation pour la réinitialiser
             welcomeEl.classList.remove('zoom-effect');
-            
-            // Forcer un reflow pour que le navigateur voit que la classe a été enlevée
             void welcomeEl.offsetWidth; 
-
-            // Changer le texte
             langIndex = (langIndex + 1) % languages.length;
             welcomeEl.textContent = languages[langIndex];
-
-            // Réappliquer l'animation
             welcomeEl.classList.add('zoom-effect');
         }
 
-        // Lancement du cycle (toutes les 4 secondes)
         welcomeEl.classList.add('zoom-effect');
-        setInterval(updateWelcome, 4000);
+        setInterval(updateWelcome, 6000);
 
-        // --- Gestion Date/Heure/Saints (Code d'origine conservé) ---
+        // --- Date et Saints ---
         const saints = {
-            '0-1': 'Sainte Marie, Mère de Dieu',
-            '1-17': 'Saint Alexis de Rome',
-            // ... (Insérez ici votre liste complète des saints du fichier précédent)
-            '11-31': 'Saint Sylvestre Ier'
+            '1-17': 'Saint Alexis',
+            '1-18': 'Sainte Bernadette'
+            // Ajoutez votre liste complète ici
         };
 
         function updateDateTimeAndSaint() {
