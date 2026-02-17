@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ateliers du Bocage - Accueil</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,12 +14,12 @@
 
         body {
             min-height: 100vh;
-            background-color: #000; /* Fond noir de secours */
+            background-color: #000;
             background-image: url('background.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Nunito', sans-serif; /* Application de Nunito partout */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -28,7 +29,6 @@
             position: relative;
         }
 
-        /* Canevas pour les particules spatiales */
         #starfield {
             position: absolute;
             top: 0;
@@ -46,21 +46,22 @@
             align-items: center;
             perspective: 1200px;
             width: 100%;
-            margin-bottom: 220px; /* Remonté pour bien dégager le logo */
+            margin-bottom: 240px; /* Espace pour le logo central */
             z-index: 2;
         }
 
         #welcome-text {
-            font-size: 5.5rem;
+            font-family: 'Nunito', sans-serif;
             font-weight: 900;
-            color: #000000; /* Texte blanc pour mieux ressortir avec la lueur */
+            font-size: 7.5rem;
+            color: #1a1a1a; /* Noir profond */
             text-transform: uppercase;
             text-align: center;
             opacity: 0;
             white-space: nowrap;
             will-change: transform, opacity;
-            /* Lueur externe */
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(255, 255, 255, 0.4);
+            /* Légère lueur pour assurer le contraste sur les zones sombres */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
         }
 
         .zoom-effect {
@@ -77,7 +78,7 @@
             25% {
                 opacity: 1;
                 filter: blur(0px);
-                letter-spacing: 8px;
+                letter-spacing: 2px;
                 transform: scale(0.8) translateZ(-100px);
             }
             75% {
@@ -87,9 +88,9 @@
             }
             100% {
                 opacity: 0;
-                transform: scale(3.5) translateZ(500px);
+                transform: scale(4.5) translateZ(600px);
                 filter: blur(12px);
-                letter-spacing: 25px;
+                letter-spacing: 20px;
             }
         }
 
@@ -101,20 +102,20 @@
             padding: 25px 35px;
             border-radius: 20px;
             backdrop-filter: blur(15px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.4);
             z-index: 2;
         }
 
-        .date { font-size: 1.6rem; font-weight: 500; margin-bottom: 8px; }
-        .saint-label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 2px; }
-        .saint { font-size: 1.3rem; font-weight: 600; margin-bottom: 8px; }
-        .time { font-size: 2.2rem; font-weight: 700; letter-spacing: 1px; }
+        .date { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+        .saint-label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+        .saint { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+        .time { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
 
         @media (max-width: 768px) {
-            #welcome-text { font-size: 2.5rem; }
-            .welcome-container { margin-bottom: 150px; }
-            .datetime-container { align-self: center; text-align: center; padding: 20px; }
+            #welcome-text { font-size: 3rem; }
+            .welcome-container { margin-bottom: 160px; }
+            .datetime-container { align-self: center; text-align: center; }
         }
     </style>
 </head>
@@ -127,62 +128,44 @@
     </div>
 
     <div class="datetime-container">
-        <div class="date" id="date"></div>
+        <div id="date" class="date"></div>
         <div class="saint-label">Saint du jour</div>
-        <div class="saint" id="saint"></div>
-        <div class="time" id="time"></div>
+        <div id="saint" class="saint"></div>
+        <div id="time" class="time"></div>
     </div>
 
     <script>
-        // --- Système de Particules (Étoiles) ---
+        // Système de Particules
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let particles = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.addEventListener('resize', resize);
         resize();
-
         class Particle {
-            constructor() {
-                this.init();
-            }
+            constructor() { this.init(); }
             init() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speed = Math.random() * 0.5 + 0.1;
-                this.opacity = Math.random();
+                this.size = Math.random() * 1.8;
+                this.speed = Math.random() * 0.3 + 0.1;
+                this.opacity = Math.random() * 0.4;
             }
-            update() {
-                this.y -= this.speed; // Mouvement vers le haut pour l'effet de voyage
-                if (this.y < 0) this.init();
-            }
+            update() { this.y -= this.speed; if (this.y < 0) this.init(); }
             draw() {
                 ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
             }
         }
-
-        for (let i = 0; i < 100; i++) particles.push(new Particle());
-
+        for (let i = 0; i < 70; i++) particles.push(new Particle());
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
+            particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
         animate();
 
-        // --- Animation Bienvenue ---
+        // Animation Bienvenue multilingue
         const languages = ["Bienvenue", "Welcome", "Bienvenido", "Willkommen", "Benvenuto", "Bem-vindo", "Witamy", "Tervetuloa", "Velkommen"];
         let langIndex = 0;
         const welcomeEl = document.getElementById('welcome-text');
@@ -194,32 +177,27 @@
             welcomeEl.textContent = languages[langIndex];
             welcomeEl.classList.add('zoom-effect');
         }
-
         welcomeEl.classList.add('zoom-effect');
         setInterval(updateWelcome, 6000);
 
-        // --- Date et Saints ---
+        // Date et Saints (Base de données complète à insérer ici)
         const saints = {
-            '1-17': 'Saint Alexis',
+            '1-17': 'Saint Alexis d\'Hegne',
             '1-18': 'Sainte Bernadette'
-            // Ajoutez votre liste complète ici
         };
 
         function updateDateTimeAndSaint() {
             const now = new Date();
             const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
             const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-            
             document.getElementById('date').textContent = `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]} ${now.getFullYear()}`;
             const key = `${now.getMonth()}-${now.getDate()}`;
             document.getElementById('saint').textContent = saints[key] || 'Saint du jour';
-            
             const h = String(now.getHours()).padStart(2, '0');
             const m = String(now.getMinutes()).padStart(2, '0');
             const s = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById('time').innerHTML = `${h}:${m}:${s}`;
+            document.getElementById('time').textContent = `${h}:${m}:${s}`;
         }
-
         updateDateTimeAndSaint();
         setInterval(updateDateTimeAndSaint, 1000);
     </script>
