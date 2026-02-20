@@ -46,7 +46,7 @@
             align-items: center;
             perspective: 1200px;
             width: 100%;
-            margin-bottom: 240px; 
+            margin-bottom: 380px; /* augmenté pour remonter le texte */
             z-index: 2;
         }
 
@@ -66,9 +66,8 @@
             gap: 40px;
         }
 
-        /* Style pour l'image du drapeau */
         .flag-img {
-            height: 80px; /* Ajusté à la taille du texte */
+            height: 80px;
             width: auto;
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -80,9 +79,9 @@
         }
 
         @keyframes spatialTravel {
-            0% { opacity: 0; transform: scale(0.1) translateZ(-800px); filter: blur(15px); }
-            25% { opacity: 1; filter: blur(0px); transform: scale(0.8) translateZ(-100px); }
-            75% { opacity: 1; filter: blur(0px); transform: scale(1.1) translateZ(50px); }
+            0%   { opacity: 0; transform: scale(0.1) translateZ(-800px); filter: blur(15px); }
+            25%  { opacity: 1; filter: blur(0px);  transform: scale(0.8) translateZ(-100px); }
+            75%  { opacity: 1; filter: blur(0px);  transform: scale(1.1) translateZ(50px); }
             100% { opacity: 0; transform: scale(4.5) translateZ(600px); filter: blur(12px); }
         }
 
@@ -99,10 +98,10 @@
             z-index: 2;
         }
 
-        .date { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
+        .date        { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
         .saint-label { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-        .saint { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
-        .time { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
+        .saint       { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; }
+        .time        { font-size: 2.2rem; font-weight: 900; letter-spacing: 1px; }
 
         @media (max-width: 1024px) {
             #welcome-text { font-size: 4rem; gap: 20px; }
@@ -111,7 +110,7 @@
 
         @media (max-width: 768px) {
             #welcome-text { font-size: 2.5rem; flex-direction: column; gap: 10px; }
-            .welcome-container { margin-bottom: 160px; }
+            .welcome-container { margin-bottom: 220px; }
             .datetime-container { align-self: center; text-align: center; }
         }
     </style>
@@ -121,8 +120,7 @@
     <canvas id="starfield"></canvas>
 
     <div class="welcome-container">
-        <div id="welcome-text">
-            </div>
+        <div id="welcome-text"></div>
     </div>
 
     <div class="datetime-container">
@@ -163,8 +161,7 @@
         }
         animate();
 
-        // --- Animation avec IMAGES de drapeaux ---
-        // Utilisation des codes ISO pour FlagPedia
+        // --- Animation drapeaux ---
         const languages = [
             { code: "fr", text: "Bienvenue" },
             { code: "gb", text: "Welcome" },
@@ -175,47 +172,180 @@
             { code: "pl", text: "Witamy" },
             { code: "fi", text: "Tervetuloa" }
         ];
-        
+
         let langIndex = 0;
         const welcomeEl = document.getElementById('welcome-text');
 
         function updateWelcome() {
             welcomeEl.classList.remove('zoom-effect');
-            void welcomeEl.offsetWidth; 
-            
+            void welcomeEl.offsetWidth;
             const current = languages[langIndex];
-            // On utilise FlagPedia pour récupérer l'image PNG du drapeau
             const flagUrl = `https://flagcdn.com/w160/${current.code}.png`;
-            
             welcomeEl.innerHTML = `
                 <img src="${flagUrl}" class="flag-img" alt="${current.code}">
                 <span>${current.text}</span>
             `;
-            
             welcomeEl.classList.add('zoom-effect');
             langIndex = (langIndex + 1) % languages.length;
         }
-
         updateWelcome();
         setInterval(updateWelcome, 6000);
 
-        // --- Date et Saints ---
+        // --- Saints (clés : mois 0-indexé - jour) ---
         const saints = {
-            '1-17': 'Saint Alexis',
-            '1-18': 'Sainte Bernadette'
-            // - Reprenez votre liste complète de l'index.html original ici
+            // Janvier (mois 0)
+            '0-1':  'Sainte Marie',       '0-2':  'Saint Basile',       '0-3':  'Sainte Geneviève',
+            '0-4':  'Saint Odilon',       '0-5':  'Saint Édouard',      '0-6':  'Saints Rois Mages',
+            '0-7':  'Saint Raymond',      '0-8':  'Saint Lucien',       '0-9':  'Sainte Alix',
+            '0-10': 'Saint Guillaume',    '0-11': 'Saint Paulin',       '0-12': 'Sainte Tatiana',
+            '0-13': 'Sainte Yvette',      '0-14': 'Sainte Nina',        '0-15': 'Saint Rémi',
+            '0-16': 'Saint Marcel',       '0-17': 'Saint Antoine',      '0-18': 'Sainte Prisca',
+            '0-19': 'Saint Marius',       '0-20': 'Saint Sébastien',    '0-21': 'Sainte Agnès',
+            '0-22': 'Saint Vincent',      '0-23': 'Saint Barnard',      '0-24': 'Saint François de Sales',
+            '0-25': 'Saint Paul',         '0-26': 'Sainte Timothée',    '0-27': 'Sainte Angèle',
+            '0-28': 'Saint Thomas d\'Aquin','0-29':'Saint Gildas',      '0-30': 'Sainte Martine',
+            '0-31': 'Saint Jean Bosco',
+            // Février (mois 1)
+            '1-1':  'Sainte Ella',        '1-2':  'Sainte Présentation','1-3':  'Saint Blaise',
+            '1-4':  'Saint Véronique',    '1-5':  'Sainte Agathe',      '1-6':  'Sainte Dorothée',
+            '1-7':  'Saint Eugène',       '1-8':  'Saint Jérôme',       '1-9':  'Sainte Apolline',
+            '1-10': 'Sainte Scholastique','1-11': 'Notre-Dame de Lourdes','1-12':'Sainte Félix',
+            '1-13': 'Sainte Béatrice',    '1-14': 'Saint Valentin',     '1-15': 'Saint Claude',
+            '1-16': 'Sainte Julienne',    '1-17': 'Saint Alexis',       '1-18': 'Sainte Bernadette',
+            '1-19': 'Saint Gabin',        '1-20': 'Saint Aimée',        '1-21': 'Saint Damien',
+            '1-22': 'Sainte Isabelle',    '1-23': 'Saint Lazare',       '1-24': 'Saint Modeste',
+            '1-25': 'Saint Roméo',        '1-26': 'Sainte Nestôre',     '1-27': 'Sainte Honorine',
+            '1-28': 'Saint Romain',       '1-29': 'Saint Auguste',
+            // Mars (mois 2)
+            '2-1':  'Saint Aubin',        '2-2':  'Saint Charles le Bon','2-3': 'Saint Guénolé',
+            '2-4':  'Saint Casimir',      '2-5':  'Sainte Olive',       '2-6':  'Sainte Colette',
+            '2-7':  'Sainte Félicité',    '2-8':  'Saint Jean de Dieu', '2-9':  'Sainte Françoise',
+            '2-10': 'Saint Vivien',       '2-11': 'Saint Rosine',       '2-12': 'Sainte Justine',
+            '2-13': 'Saint Rodrigue',     '2-14': 'Sainte Mathilde',    '2-15': 'Saint Louise',
+            '2-16': 'Sainte Bénédicte',   '2-17': 'Saint Patrick',      '2-18': 'Sainte Cyrille',
+            '2-19': 'Saint Joseph',       '2-20': 'Saint Cuthbert',     '2-21': 'Sainte Clémence',
+            '2-22': 'Sainte Léa',         '2-23': 'Saint Victorien',    '2-24': 'Sainte Cath.',
+            '2-25': 'Saint Humbert',      '2-26': 'Saint Ludger',       '2-27': 'Sainte Lydie',
+            '2-28': 'Saint Gontran',      '2-29': 'Saint Oswalt',       '2-30': 'Saint Amédée',
+            '2-31': 'Saint Benjamin',
+            // Avril (mois 3)
+            '3-1':  'Saint Hugues',       '3-2':  'Saint François de Paule','3-3':'Saint Richard',
+            '3-4':  'Saint Isidore',      '3-5':  'Saint Vincent Ferrier','3-6':'Sainte Marcelline',
+            '3-7':  'Saint Jean-Baptiste','3-8':  'Sainte Julie',       '3-9':  'Sainte Gautier',
+            '3-10': 'Saint Fulbert',      '3-11': 'Saint Stanislas',    '3-12': 'Saint Jules',
+            '3-13': 'Saint Ida',          '3-14': 'Saint Maxime',       '3-15': 'Sainte Paterne',
+            '3-16': 'Sainte Bernadette',  '3-17': 'Saint Anicet',       '3-18': 'Sainte Parfait',
+            '3-19': 'Saint Emma',         '3-20': 'Sainte Odette',      '3-21': 'Saint Anselme',
+            '3-22': 'Sainte Léonie',      '3-23': 'Saint Georges',      '3-24': 'Saint Fidèle',
+            '3-25': 'Saint Marc',         '3-26': 'Sainte Alida',       '3-27': 'Sainte Zita',
+            '3-28': 'Saint Valérie',      '3-29': 'Sainte Catherine de Sienne','3-30':'Saint Robert',
+            // Mai (mois 4)
+            '4-1':  'Saint Joseph Artisan','4-2': 'Saint Boris',        '4-3':  'Saints Philippe et Jacques',
+            '4-4':  'Sainte Sylvain',     '4-5':  'Sainte Judith',      '4-6':  'Sainte Prudence',
+            '4-7':  'Sainte Gisèle',      '4-8':  'Saint Victoire',     '4-9':  'Saint Pacôme',
+            '4-10': 'Saint Isidore',      '4-11': 'Sainte Estelle',     '4-12': 'Saint Achille',
+            '4-13': 'Sainte Rolande',     '4-14': 'Saint Matthias',     '4-15': 'Saint Isidore',
+            '4-16': 'Saint Honoré',       '4-17': 'Saint Pascal',       '4-18': 'Sainte Éric',
+            '4-19': 'Saint Yves',         '4-20': 'Saint Bernardin',    '4-21': 'Saint Eugène',
+            '4-22': 'Sainte Rita',        '4-23': 'Saint Didier',       '4-24': 'Saint Donatien',
+            '4-25': 'Saint Grégoire VII', '4-26': 'Sainte Bérenger',    '4-27': 'Sainte Magdeleine',
+            '4-28': 'Saint Germain',      '4-29': 'Sainte Jeanne d\'Arc','4-30':'Sainte Pétronille',
+            '4-31': 'Sainte Pétronille',
+            // Juin (mois 5)
+            '5-1':  'Saint Justin',       '5-2':  'Saints Marcellin et Pierre','5-3':'Saint Kevin',
+            '5-4':  'Sainte Clotilde',    '5-5':  'Saint Igor',         '5-6':  'Saint Norbert',
+            '5-7':  'Saint Gilbert',      '5-8':  'Sainte Médard',      '5-9':  'Sainte Diane',
+            '5-10': 'Sainte Landry',      '5-11': 'Saint Barnabé',      '5-12': 'Saint Guy',
+            '5-13': 'Saint Antoine de Padoue','5-14':'Saint Élisée',    '5-15': 'Sainte Germaine',
+            '5-16': 'Saint Jean-François','5-17': 'Saint Hervé',        '5-18': 'Saint Léonce',
+            '5-19': 'Saint Romuald',      '5-20': 'Saint Silvère',      '5-21': 'Saint Louis de Gonzague',
+            '5-22': 'Saint Paulin',       '5-23': 'Sainte Audrey',      '5-24': 'Sainte Nativité',
+            '5-25': 'Saint Éliès',        '5-26': 'Saint Anthelme',     '5-27': 'Saint Fernand',
+            '5-28': 'Saint Irénée',       '5-29': 'Saints Pierre et Paul','5-30':'Sainte Martial',
+            // Juillet (mois 6)
+            '6-1':  'Saint Thierry',      '6-2':  'Saint Martinien',    '6-3':  'Saint Thomas',
+            '6-4':  'Saint Florent',      '6-5':  'Sainte Antoine',     '6-6':  'Sainte Mariette',
+            '6-7':  'Saint Raoul',        '6-8':  'Saint Thibaut',      '6-9':  'Sainte Amandine',
+            '6-10': 'Saint Ulrich',       '6-11': 'Saint Benoît',       '6-12': 'Saint Olivier',
+            '6-13': 'Saint Henri',        '6-14': 'Saint Camille',      '6-15': 'Saint Donald',
+            '6-16': 'Notre-Dame du Carmel','6-17':'Saint Alexis',       '6-18': 'Saint Frédéric',
+            '6-19': 'Sainte Arsène',      '6-20': 'Sainte Marguerite',  '6-21': 'Saint Victor',
+            '6-22': 'Sainte Marie-Madeleine','6-23':'Sainte Brigitte',  '6-24': 'Saint Christine',
+            '6-25': 'Saint Jacques',      '6-26': 'Saints Joachim et Anne','6-27':'Saint Nathalie',
+            '6-28': 'Saint Samson',       '6-29': 'Sainte Marthe',      '6-30': 'Saint Ignace',
+            '6-31': 'Saint Ignace',
+            // Août (mois 7)
+            '7-1':  'Saint Alphonse',     '7-2':  'Saint Eusèbe',       '7-3':  'Sainte Lydie',
+            '7-4':  'Saint Jean-Marie',   '7-5':  'Saint Abel',         '7-6':  'Transfiguration',
+            '7-7':  'Saint Gaétan',       '7-8':  'Saint Dominique',    '7-9':  'Saint Amour',
+            '7-10': 'Saint Laurent',      '7-11': 'Sainte Claire',      '7-12': 'Sainte Clarisse',
+            '7-13': 'Saint Hippolyte',    '7-14': 'Saint Eusèbe',       '7-15': 'Assomption',
+            '7-16': 'Saint Armel',        '7-17': 'Saint Hyacinthe',    '7-18': 'Sainte Hélène',
+            '7-19': 'Saint Jean-Eudes',   '7-20': 'Saint Bernard',      '7-21': 'Sainte Christophe',
+            '7-22': 'Saint Symphorien',   '7-23': 'Saint Rose de Lima', '7-24': 'Saint Barthélemy',
+            '7-25': 'Saint Louis',        '7-26': 'Sainte Natacha',     '7-27': 'Saint Monique',
+            '7-28': 'Saint Augustin',     '7-29': 'Saint Sabine',       '7-30': 'Saint Fiacre',
+            '7-31': 'Saint Raymond',
+            // Septembre (mois 8)
+            '8-1':  'Saint Gilles',       '8-2':  'Saint Ingrid',       '8-3':  'Saint Grégoire',
+            '8-4':  'Sainte Rosalie',     '8-5':  'Sainte Raïssa',      '8-6':  'Saint Bertrand',
+            '8-7':  'Sainte Reine',       '8-8':  'Nativité de Marie',  '8-9':  'Saint Alain',
+            '8-10': 'Sainte Inès',        '8-11': 'Saint Adelphe',      '8-12': 'Saint Apollinaire',
+            '8-13': 'Saint Jean Chrysostome','8-14':'Sainte Alberte',   '8-15': 'Saint Roland',
+            '8-16': 'Saint Edith',        '8-17': 'Saint Renaud',       '8-18': 'Sainte Nadège',
+            '8-19': 'Saint Janvier',      '8-20': 'Sainte Davy',        '8-21': 'Saint Matthieu',
+            '8-22': 'Saint Maurice',      '8-23': 'Saint Constance',    '8-24': 'Sainte Firmin',
+            '8-25': 'Saint Côme et Damien','8-26':'Saints Côme et Damien','8-27':'Saint Vincent de Paul',
+            '8-28': 'Saint Venceslas',    '8-29': 'Saint Michel',       '8-30': 'Saint Jérôme',
+            // Octobre (mois 9)
+            '9-1':  'Sainte Thérèse de l\'Enfant-Jésus','9-2':'Saints Anges gardiens','9-3':'Saint Gérard',
+            '9-4':  'Saint François d\'Assise','9-5':'Sainte Fleur',    '9-6':  'Saint Bruno',
+            '9-7':  'Notre-Dame du Rosaire','9-8':'Saint Pélagie',      '9-9':  'Saint Denis',
+            '9-10': 'Saint Ghislain',     '9-11': 'Saint Wilfrid',      '9-12': 'Saint Wilfrid',
+            '9-13': 'Saint Gérald',       '9-14': 'Sainte Calliste',    '9-15': 'Sainte Thérèse d\'Avila',
+            '9-16': 'Saint Hedwige',      '9-17': 'Sainte Ignace',      '9-18': 'Saint Luc',
+            '9-19': 'Saint Paul de la Croix','9-20':'Saint Adeline',    '9-21': 'Saint Céline',
+            '9-22': 'Sainte Salomé',      '9-23': 'Saint Jean de Capistran','9-24':'Saint Crépin',
+            '9-25': 'Saints Simon et Jude','9-26':'Sainte Narcisse',    '9-27': 'Sainte Ernestine',
+            '9-28': 'Saint Quentin',      '9-29': 'Saint Narcisse',     '9-30': 'Saint Wolfgang',
+            '9-31': 'Saint Wolfgang',
+            // Novembre (mois 10)
+            '10-1': 'Toussaint',          '10-2': 'Défunts',            '10-3': 'Saint Hubert',
+            '10-4': 'Saint Charles Borromée','10-5':'Sainte Bertille',  '10-6': 'Saint Léonard',
+            '10-7': 'Saint Carine',       '10-8': 'Saint Geoffroy',     '10-9': 'Saint Léon',
+            '10-10':'Saint Martin de Tours','10-11':'Saint Liber',      '10-12':'Sainte Brice',
+            '10-13':'Saint Sidoine',      '10-14':'Saint Albéric',      '10-15':'Sainte Marguerite',
+            '10-16':'Sainte Geneviève',   '10-17':'Sainte Élisabeth',   '10-18':'Saint Aude',
+            '10-19':'Sainte Tanguy',      '10-20':'Saint Edmond',       '10-21':'Présentation',
+            '10-22':'Sainte Cécile',      '10-23':'Saint Clément',      '10-24':'Sainte Flora',
+            '10-25':'Sainte Catherine d\'Alexandrie','10-26':'Sainte Delphine','10-27':'Saint Sévrin',
+            '10-28':'Saint Jacques de la Marche','10-29':'Saint Saturnin','10-30':'Saint André',
+            // Décembre (mois 11)
+            '11-1': 'Sainte Florence',    '11-2': 'Sainte Viviane',     '11-3': 'Saint François-Xavier',
+            '11-4': 'Sainte Barbara',     '11-5': 'Saint Gérald',       '11-6': 'Saint Nicolas',
+            '11-7': 'Saint Ambroise',     '11-8': 'Immaculée Conception','11-9':'Saint Pierre Fourier',
+            '11-10':'Saint Romaric',      '11-11':'Saint Damase',       '11-12':'Sainte Jeanne de Chantal',
+            '11-13':'Sainte Odile',       '11-14':'Sainte Ninon',       '11-15':'Sainte Christiane',
+            '11-16':'Sainte Alice',       '11-17':'Saint Gaël',         '11-18':'Sainte Gatien',
+            '11-19':'Sainte Urbain',      '11-20':'Saint Abraham',      '11-21':'Saint Pierre Canisius',
+            '11-22':'Sainte Françoise-Xavière','11-23':'Saint Adèle',   '11-24':'Sainte Adèle',
+            '11-25':'Noël',               '11-26':'Saint Étienne',      '11-27':'Saint Jean',
+            '11-28':'Saints Innocents',   '11-29':'Saint David',        '11-30':'Saint Roger',
+            '11-31':'Saint Sylvestre'
         };
 
         function updateDateTimeAndSaint() {
             const now = new Date();
-            const jours = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-            const mois = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-            document.getElementById('date').textContent = `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]} ${now.getFullYear()}`;
+            const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+            const mois  = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+            document.getElementById('date').textContent =
+                `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]} ${now.getFullYear()}`;
+            // Clé = mois (0-indexé) - jour
             const key = `${now.getMonth()}-${now.getDate()}`;
             document.getElementById('saint').textContent = saints[key] || 'Saint du jour';
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const s = String(now.getSeconds()).padStart(2, '0');
+            const h = String(now.getHours()).padStart(2,'0');
+            const m = String(now.getMinutes()).padStart(2,'0');
+            const s = String(now.getSeconds()).padStart(2,'0');
             document.getElementById('time').textContent = `${h}:${m}:${s}`;
         }
         updateDateTimeAndSaint();
